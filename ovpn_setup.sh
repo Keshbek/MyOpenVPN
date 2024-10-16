@@ -190,7 +190,7 @@ install_ovpn () {
 	echo
 	echo Installing OpenVPN. Please wait ...
 	apt update -y && apt upgrade -y
-	apt install -y curl openvpn easy-rsa net-tools dnsutils zip python3
+	apt install -y curl openvpn easy-rsa net-tools iputils-ping dnsutils nftables zip python3
 
 	# Download concatenating script
 	mkdir -p /etc/openvpn/all_clients
@@ -295,6 +295,7 @@ create_config (){
 port $((OVPN_BASE_PORT + conf_num))
 proto udp
 dev tun$conf_num
+local $ipv4
 ca ca.crt
 cert server.crt
 key server.key
@@ -407,6 +408,7 @@ EOF
 	echo 'flush ruleset' >> /etc/nftables.conf
 	nft -s list ruleset >> /etc/nftables.conf
 	# Reload firewall
+	chmod +x /etc/nftables.conf
 	/etc/nftables.conf 
 
 	# Start OpenVPN server and enable it on boot
